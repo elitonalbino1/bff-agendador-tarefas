@@ -6,15 +6,15 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-
 public class UsuarioDTOResponse {
+
     private Long id;
     private String nome;
     private String email;
-    private String senha;
+    // ✅ senha REMOVIDA da resposta
     private List<EnderecoDTOResponse> enderecos;
     private List<TelefoneDTOResponse> telefones;
 }

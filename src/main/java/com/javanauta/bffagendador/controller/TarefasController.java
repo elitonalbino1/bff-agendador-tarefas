@@ -6,13 +6,12 @@ import com.javanauta.bffagendador.business.dto.out.TarefasDTOResponse;
 import com.javanauta.bffagendador.business.enums.StatusNotificacaoEnum;
 import com.javanauta.bffagendador.infrastructure.security.SecurityConfig;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,20 +29,15 @@ public class TarefasController {
 
     @PostMapping
     @Operation(summary = "Salvar Tarefa", description = "Cria uma nova tarefa")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Tarefa salva com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "401", description = "Não autorizado"),
-            @ApiResponse(responseCode = "500", description = "Erro no servidor")
-    })
     public ResponseEntity<TarefasDTOResponse> gravaTarefas(
             @Valid @RequestBody TarefasDTORequest dto,
             @RequestHeader("Authorization") String token) {
-        return ResponseEntity.ok(tarefasService.gravarTarefa(token, dto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(tarefasService.gravarTarefa(token, dto));
     }
 
     @GetMapping("/eventos")
-    @Operation(summary = "Buscar Tarefas por Período", description = "Busca tarefas cadastradas entre datas")
+    @Operation(summary = "Buscar Tarefas por Período")
     public ResponseEntity<List<TarefasDTOResponse>> buscaListaDeTarefasPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicial,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal,
@@ -52,23 +46,23 @@ public class TarefasController {
     }
 
     @GetMapping
-    @Operation(summary = "Buscar Tarefas por Email", description = "Busca tarefas de um usuário pelo email")
+    @Operation(summary = "Buscar Tarefas do Usuário Logado")
     public ResponseEntity<List<TarefasDTOResponse>> buscarTarefasPorEmail(
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(tarefasService.buscaTarefasPorEmail(token));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar Tarefa", description = "Remove uma tarefa pelo ID")
+    @Operation(summary = "Deletar Tarefa")
     public ResponseEntity<Void> deletaTarefasPorId(
             @PathVariable("id") String id,
             @RequestHeader("Authorization") String token) {
         tarefasService.deletaTarefasPorId(id, token);
-        return ResponseEntity.noContent().build(); // ✅ 204 No Content
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
-    @Operation(summary = "Alterar Status da Tarefa", description = "Atualiza o status de uma tarefa")
+    @Operation(summary = "Alterar Status da Tarefa")
     public ResponseEntity<TarefasDTOResponse> alteraStatusNotificacao(
             @RequestParam("status") StatusNotificacaoEnum status,
             @PathVariable("id") String id,
@@ -77,7 +71,7 @@ public class TarefasController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar Tarefa", description = "Atualiza os dados de uma tarefa existente")
+    @Operation(summary = "Atualizar Tarefa")
     public ResponseEntity<TarefasDTOResponse> updateTarefas(
             @Valid @RequestBody TarefasDTORequest dto,
             @PathVariable("id") String id,

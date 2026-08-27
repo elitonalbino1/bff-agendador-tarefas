@@ -4,13 +4,12 @@ import lombok.*;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-
 public class TelefoneDTOResponse {
+
     private Long id;
     private String numero;
     private String ddd;
-
 }
