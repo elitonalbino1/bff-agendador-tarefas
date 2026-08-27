@@ -23,24 +23,27 @@ public class GlobalExceptionHandler {
         return error;
     }
 
-    // Erros de validação (ex.: DTOs com @Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         String message = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .findFirst()
                 .orElse("Erro de validação");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(buildErrorResponse(message, HttpStatus.BAD_REQUEST));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorResponse(message, HttpStatus.BAD_REQUEST));
     }
 
-    // Erros de comunicação Feign (quando Usuário ou Agendador‑tarefas estão fora do ar)
+    // ✅ Repassa o status HTTP original do serviço downstream
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<Map<String, Object>> handleFeignException(FeignException ex) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(buildErrorResponse("Serviço indisponível: " + ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE));
+        HttpStatus status = HttpStatus.resolve(ex.status());
+        if (status == null || status.is5xxServerError()) {
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+        }
+        return ResponseEntity.status(status)
+                .body(buildErrorResponse("Erro no serviço downstream: " + ex.getMessage(), status));
     }
 
-    // Erros genéricos
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

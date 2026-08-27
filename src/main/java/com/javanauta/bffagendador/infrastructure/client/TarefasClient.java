@@ -10,32 +10,34 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// ✅ URL base sem path — paths completos nas annotations
+// ✅ Rotas ALINHADAS com o agendador-tarefas corrigido (PathVariable)
 @FeignClient(name = "agendador-tarefas", url = "${agendador-tarefas.url}")
 public interface TarefasClient {
 
-    @PostMapping
+    @PostMapping("/tarefas")
     TarefasDTOResponse gravaTarefas(@RequestBody TarefasDTORequest dto,
                                     @RequestHeader("Authorization") String token);
 
-    @GetMapping("/eventos")
+    @GetMapping("/tarefas/eventos")
     List<TarefasDTOResponse> buscaListaDeTarefasPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicial,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal,
             @RequestHeader("Authorization") String token);
 
-    @GetMapping
+    @GetMapping("/tarefas")
     List<TarefasDTOResponse> buscarTarefasPorEmail(@RequestHeader("Authorization") String token);
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/tarefas/{id}")
     void deletaTarefasPorId(@PathVariable("id") String id,
                             @RequestHeader("Authorization") String token);
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/tarefas/{id}")
     TarefasDTOResponse alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
                                                @PathVariable("id") String id,
                                                @RequestHeader("Authorization") String token);
 
-    @PutMapping("/{id}")
+    @PutMapping("/tarefas/{id}")
     TarefasDTOResponse updateTarefas(@RequestBody TarefasDTORequest dto,
                                      @PathVariable("id") String id,
                                      @RequestHeader("Authorization") String token);
