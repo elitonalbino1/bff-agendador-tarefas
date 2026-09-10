@@ -10,34 +10,38 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// ✅ URL base sem path — paths completos nas annotations
-// ✅ Rotas ALINHADAS com o agendador-tarefas corrigido (PathVariable)
 @FeignClient(name = "agendador-tarefas", url = "${agendador-tarefas.url}")
 public interface TarefasClient {
 
-    @PostMapping("/tarefas")
+    // Salvar nova tarefa
+    @PostMapping
     TarefasDTOResponse gravaTarefas(@RequestBody TarefasDTORequest dto,
                                     @RequestHeader("Authorization") String token);
 
-    @GetMapping("/tarefas/eventos")
+    // Buscar tarefas por período
+    @GetMapping("/eventos")
     List<TarefasDTOResponse> buscaListaDeTarefasPorPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicial,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal,
             @RequestHeader("Authorization") String token);
 
-    @GetMapping("/tarefas")
+    // Buscar tarefas por email
+    @GetMapping
     List<TarefasDTOResponse> buscarTarefasPorEmail(@RequestHeader("Authorization") String token);
 
-    @DeleteMapping("/tarefas/{id}")
+    // Deletar tarefa por ID
+    @DeleteMapping("/{id}")
     void deletaTarefasPorId(@PathVariable("id") String id,
                             @RequestHeader("Authorization") String token);
 
-    @PatchMapping("/tarefas/{id}")
+    // Alterar status de notificação
+    @PatchMapping("/{id}")
     TarefasDTOResponse alteraStatusNotificacao(@RequestParam("status") StatusNotificacaoEnum status,
                                                @PathVariable("id") String id,
                                                @RequestHeader("Authorization") String token);
 
-    @PutMapping("/tarefas/{id}")
+    // Atualizar tarefa
+    @PutMapping("/{id}")
     TarefasDTOResponse updateTarefas(@RequestBody TarefasDTORequest dto,
                                      @PathVariable("id") String id,
                                      @RequestHeader("Authorization") String token);
