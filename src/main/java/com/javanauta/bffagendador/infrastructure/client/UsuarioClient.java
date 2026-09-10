@@ -7,44 +7,51 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-// ✅ URL base sem path — paths completos nas annotations
 @FeignClient(name = "usuario", url = "${usuario.url}")
 public interface UsuarioClient {
 
-    @GetMapping("/usuario")
+    // Buscar usuário por email
+    @GetMapping
     UsuarioDTOResponse buscaUsuarioPorEmail(@RequestParam("email") String email,
                                             @RequestHeader("Authorization") String token);
 
-    @PostMapping("/usuario")
+    // Salvar novo usuário
+    @PostMapping
     UsuarioDTOResponse salvarUsuario(@RequestBody UsuarioDTORequest usuarioDTO);
 
-    // ✅ CORRIGIDO: retorna Map (serviço usuario retorna {"token": "..."})
-    @PostMapping("/usuario/login")
+    // Login do usuário
+    @PostMapping("/login")
     Map<String, String> login(@RequestBody LoginRequestDTO usuarioDTO);
 
-    @DeleteMapping("/usuario/{email}")
+    // Deletar usuário por email
+    @DeleteMapping("/{email}")
     void deletaUsuarioPorEmail(@PathVariable("email") String email,
                                @RequestHeader("Authorization") String token);
 
-    @PutMapping("/usuario")
+    // Atualizar dados do usuário
+    @PutMapping
     UsuarioDTOResponse atualizaDadosUsuario(@RequestBody UsuarioDTORequest dto,
                                             @RequestHeader("Authorization") String token);
 
-    @PutMapping("/usuario/endereco/{id}")
+    // Atualizar endereço
+    @PutMapping("/endereco/{id}")
     EnderecoDTOResponse atualizaEndereco(@RequestBody EnderecoDTORequest dto,
                                          @PathVariable("id") Long id,
                                          @RequestHeader("Authorization") String token);
 
-    @PutMapping("/usuario/telefone/{id}")
+    // Atualizar telefone
+    @PutMapping("/telefone/{id}")
     TelefoneDTOResponse atualizaTelefone(@RequestBody TelefoneDTORequest dto,
                                          @PathVariable("id") Long id,
                                          @RequestHeader("Authorization") String token);
 
-    @PostMapping("/usuario/endereco")
+    // Cadastrar endereço
+    @PostMapping("/endereco")
     EnderecoDTOResponse cadastraEndereco(@RequestBody EnderecoDTORequest dto,
                                          @RequestHeader("Authorization") String token);
 
-    @PostMapping("/usuario/telefone")
+    // Cadastrar telefone
+    @PostMapping("/telefone")
     TelefoneDTOResponse cadastraTelefone(@RequestBody TelefoneDTORequest dto,
                                          @RequestHeader("Authorization") String token);
 }
