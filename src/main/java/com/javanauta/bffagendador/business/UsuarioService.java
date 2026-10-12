@@ -62,4 +62,8 @@ public class UsuarioService {
         log.info("Cadastrando novo telefone");
         return client.cadastraTelefone(dto, token);
     }
+    public ViaCepDTOResponse buscarEnderecoPorCep(String cep){
+        return client.buscarDadosCep(cep);
+
+    }
 }
