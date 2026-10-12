@@ -3,6 +3,7 @@ package com.javanauta.bffagendador.infrastructure.client;
 import com.javanauta.bffagendador.business.dto.in.*;
 import com.javanauta.bffagendador.business.dto.out.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -54,4 +55,7 @@ public interface UsuarioClient {
     @PostMapping("/telefone")
     TelefoneDTOResponse cadastraTelefone(@RequestBody TelefoneDTORequest dto,
                                          @RequestHeader("Authorization") String token);
-}
+    @GetMapping("/endereco/{cep}")
+    ViaCepDTOResponse buscarDadosCep(@PathVariable("cep") String cep);
+    }
+
