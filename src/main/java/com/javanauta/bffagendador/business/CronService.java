@@ -3,6 +3,7 @@ package com.javanauta.bffagendador.business;
 import com.javanauta.bffagendador.business.dto.in.LoginRequestDTO;
 import com.javanauta.bffagendador.business.dto.out.TarefasDTOResponse;
 import com.javanauta.bffagendador.business.enums.StatusNotificacaoEnum;
+import com.javanauta.bffagendador.infrastructure.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +34,11 @@ public class CronService {
 
         try {
             String token = login(converterParaRequestDTO());
+            if (token == null || token.isBlank()) {
+                log.warn("Job cancelado: Não foi possível obter o token de sistema.");
+                return;
+            }
+
             String bearerToken = "Bearer " + token;
 
             LocalDateTime horaFutura = LocalDateTime.now().plusHours(1);
@@ -43,14 +49,17 @@ public class CronService {
 
             log.info("Encontradas {} tarefas para notificar", listaTarefas.size());
 
-            // ✅ try/catch individual: uma tarefa com erro não para as outras
+            // Processa cada tarefa individualmente
             listaTarefas.forEach(tarefa -> processarTarefa(tarefa, bearerToken));
 
             log.info("===== Job de notificação finalizado =====");
 
+        } catch (UnauthorizedException e) {
+            // ✅ Captura o 401 sem estourar stack trace vermelho
+            log.warn("Job de notificação não executado: Usuário de sistema ({}) não encontrado ou credenciais inválidas.", email);
         } catch (Exception e) {
-            // ✅ try/catch geral: falha não derruba o scheduler
-            log.error("Erro ao executar job de notificação", e);
+            // ✅ Loga apenas a mensagem do erro sem a pilha inteira
+            log.error("Erro ao executar job de notificação: {}", e.getMessage());
         }
     }
 
@@ -63,7 +72,7 @@ public class CronService {
             log.info("Status da tarefa {} atualizado para NOTIFICADO", tarefa.getId());
 
         } catch (Exception e) {
-            log.error("Erro ao processar tarefa ID: {}", tarefa.getId(), e);
+            log.error("Erro ao processar tarefa ID {}: {}", tarefa.getId(), e.getMessage());
         }
     }
 

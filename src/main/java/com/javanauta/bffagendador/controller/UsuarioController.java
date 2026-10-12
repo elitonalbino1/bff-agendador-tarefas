@@ -60,7 +60,7 @@ public class UsuarioController {
     @PutMapping
     @Operation(summary = "Atualizar Usuário", description = "Atualiza dados do usuário")
     public ResponseEntity<UsuarioDTOResponse> atualizaDadosUsuario(
-            @RequestBody UsuarioDTORequest dto,
+            @Valid @RequestBody UsuarioDTORequest dto, // ✅ Adicionado @Valid
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.atualizaDadosdeUsuario(token, dto));
     }
@@ -68,7 +68,7 @@ public class UsuarioController {
     @PutMapping("/endereco/{id}")
     @Operation(summary = "Atualizar Endereço", description = "Atualiza endereço do usuário")
     public ResponseEntity<EnderecoDTOResponse> atualizaEndereco(
-            @RequestBody EnderecoDTORequest dto,
+            @Valid @RequestBody EnderecoDTORequest dto, // ✅ Adicionado @Valid
             @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.atualizaEndereco(id, dto, token));
@@ -77,7 +77,7 @@ public class UsuarioController {
     @PutMapping("/telefone/{id}")
     @Operation(summary = "Atualizar Telefone", description = "Atualiza telefone do usuário")
     public ResponseEntity<TelefoneDTOResponse> atualizaTelefone(
-            @RequestBody TelefoneDTORequest dto,
+            @Valid @RequestBody TelefoneDTORequest dto, // ✅ Adicionado @Valid
             @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(usuarioService.atualizaTelefone(id, dto, token));
@@ -99,5 +99,12 @@ public class UsuarioController {
             @RequestHeader("Authorization") String token) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuarioService.cadastraTelefone(token, dto));
+    }
+
+    @GetMapping("/endereco/{cep}")
+    @Operation(summary = "Busca Endereço pelo CEP", description = "Busca dados de endereço recebendo o CEP")
+    public ResponseEntity<ViaCepDTOResponse> buscarEndereco(
+            @PathVariable("cep") String cep) {
+        return ResponseEntity.ok(usuarioService.buscarEnderecoPorCep(cep)); // ✅ Retorna 200 OK
     }
 }
