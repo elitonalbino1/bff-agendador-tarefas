@@ -1,9 +1,14 @@
 package com.javanauta.bffagendador.infrastructure.client;
 
-import com.javanauta.bffagendador.business.dto.in.*;
-import com.javanauta.bffagendador.business.dto.out.*;
+import com.javanauta.bffagendador.business.dto.in.EnderecoDTORequest;
+import com.javanauta.bffagendador.business.dto.in.LoginRequestDTO;
+import com.javanauta.bffagendador.business.dto.in.TelefoneDTORequest;
+import com.javanauta.bffagendador.business.dto.in.UsuarioDTORequest;
+import com.javanauta.bffagendador.business.dto.out.EnderecoDTOResponse;
+import com.javanauta.bffagendador.business.dto.out.TelefoneDTOResponse;
+import com.javanauta.bffagendador.business.dto.out.UsuarioDTOResponse;
+import com.javanauta.bffagendador.business.dto.out.ViaCepDTOResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

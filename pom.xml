@@ -19,7 +19,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2025.1.2</spring-cloud.version>
-		<!-- Força UTF-8 em todo o build -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -126,7 +125,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Força encoding UTF-8 no plugin de recursos -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -134,6 +132,12 @@
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<!-- Plugin do SonarQube -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version>
 			</plugin>
 		</plugins>
 	</build>

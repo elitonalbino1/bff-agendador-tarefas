@@ -5,9 +5,18 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@SecurityScheme(name = SecurityConfig.SECURITY_SCHEME, type = SecuritySchemeType.HTTP,
-        bearerFormat = "JWT", scheme = "bearer")
+@SecurityScheme(
+        name = SecurityConfig.SECURITY_SCHEME,
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer"
+)
 public class SecurityConfig {
 
     public static final String SECURITY_SCHEME = "bearerAuth";
+
+    // Construtor privado para evitar instância
+    private SecurityConfig() {
+        throw new UnsupportedOperationException("Classe utilitária - não deve ser instanciada");
+    }
 }

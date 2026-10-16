@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// ✅ IMPORT EXPLÍCITO DA SUA CLASSE
-import com.javanauta.bffagendador.infrastructure.exceptions.IllegalArgumentException;
-
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    // Constante para evitar duplicação
+    private static final String UNKNOWN_SERVICE = "unknown-service";
 
     // ========== MÉTODOS AUXILIARES ==========
 
@@ -37,16 +37,12 @@ public class GlobalExceptionHandler {
         return error;
     }
 
-    private Map<String, Object> buildError(String message, HttpStatus status) {
-        return buildError(message, status, null);
-    }
-
     private String extractServiceName(String url) {
-        if (url == null) return "unknown-service";
+        if (url == null) return UNKNOWN_SERVICE;
         if (url.contains("8080") || url.contains("usuario")) return "usuario-service";
         if (url.contains("8081") || url.contains("tarefas")) return "agendador-tarefas-service";
         if (url.contains("8082") || url.contains("email")) return "notificacao-service";
-        return "unknown-service";
+        return UNKNOWN_SERVICE;
     }
 
     private String getMessageFromFeignException(FeignException ex, String serviceName) {
@@ -61,7 +57,7 @@ public class GlobalExceptionHandler {
         };
     }
 
-    // ========== HANDLERS DE EXCEÇÕES CUSTOMIZADAS (do ErrorDecoder) ==========
+    // ========== HANDLERS DE EXCEÇÕES CUSTOMIZADAS ==========
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<Map<String, Object>> handleConflict(
@@ -106,8 +102,7 @@ public class GlobalExceptionHandler {
             status = HttpStatus.SERVICE_UNAVAILABLE;
         }
 
-        // Proteção contra NPE
-        String serviceName = "unknown-service";
+        String serviceName = UNKNOWN_SERVICE;
         if (ex.request() != null && ex.request().url() != null) {
             serviceName = extractServiceName(ex.request().url());
         }
@@ -156,7 +151,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    // ✅ AGORA PEGA SUA IllegalArgumentException CUSTOMIZADA
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
@@ -165,7 +159,7 @@ public class GlobalExceptionHandler {
                 .body(buildError(ex.getMessage(), HttpStatus.BAD_REQUEST, request.getRequestURI()));
     }
 
-    // ========== HANDLER GENÉRICO (ÚLTIMA LINHA DE DEFESA) ==========
+    // ========== HANDLER GENÉRICO ==========
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(
